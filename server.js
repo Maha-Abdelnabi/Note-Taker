@@ -13,6 +13,8 @@ const path = require ("path");
 // Port number to run the port
 const PORT = process.env.PORT || 3001;
 
+//getting db.json to store and retrieve notes using the `fs` module
+const allNotes = require("./db/db.json");
 
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -21,18 +23,31 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Get request to send the data to the server
+
+//read the `db.json` file and return all saved notes as JSON
+app.get("/api/notes", (req, res) => {
+  res.json(allNotes);
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
+//return notes.htmal
 app.get("/notes", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
+//return index.html in case the url that added isn't defined
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
+//post request to create new data 
+app.post("/api/notes", (req, res) => {
+  const newNote = createNewNote(req.body, allNotes);//
+  res.json(newNote);
+});
 
 // Server Setup
 app.listen(PORT, () => {
