@@ -13,8 +13,15 @@ const path = require ("path");
 // Port number to run the port
 const PORT = process.env.PORT || 3001;
 
+//generate unique id
+const uuid = require("uuid");
+
+//body parser gets each request and turn it's data into object
+//const bodyParaser = require("body-parser")
+
+
 //getting db.json to store and retrieve notes using the `fs` module
-const allNotes = require("./db/db.json");
+const noteData = require("./db/db.json");
 
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -45,9 +52,19 @@ app.get("*", (req, res) => {
 
 //post request to create new data 
 app.post("/api/notes", (req, res) => {
-  const newNote = createNewNote(req.body, allNotes);//
-  res.json(newNote);
+  const addNote = req.body; //holds parameters that are sent up from the client as part of a POST request, you can access the properties over then url
+  addNote.id = uuid();
+  noteData.push(addNote);
+  const jsonData = JSON.stringify(noteData);
+
+  fs.writeFile("./db/db.json", jsonData, (err) => {
+    err ? console.log(err) : res.send(addNote);
+  });
 });
+
+//delete request
+
+
 
 // Server Setup
 app.listen(PORT, () => {
