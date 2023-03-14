@@ -14,7 +14,7 @@ const path = require ("path");
 const PORT = process.env.PORT || 3001;
 
 //generate unique id
-const uuid = require("uuid");
+const uuid = require('./helper/uuid');
 
 //body parser gets each request and turn it's data into object
 //const bodyParaser = require("body-parser")
@@ -23,7 +23,7 @@ const uuid = require("uuid");
 //getting db.json to store and retrieve notes using the `fs` module
 const noteData = require("./db/db.json");
 
-// Sets up the Express app to handle data parsing
+// Sets up the Express app to handle data parsing..allow to access info coming from forms
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //Static Allows us to reference files with their relative path
@@ -33,7 +33,7 @@ app.use(express.static("public"));
 
 //read the `db.json` file and return all saved notes as JSON
 app.get("/api/notes", (req, res) => {
-  res.json(allNotes);
+  res.json(noteData);
 });
 
 app.get("/", (req, res) => {
@@ -45,16 +45,14 @@ app.get("/notes", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
-//return index.html in case the url that added isn't defined
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "./public/index.html"));
-});
 
 //post request to create new data 
 app.post("/api/notes", (req, res) => {
   const addNote = req.body; //holds parameters that are sent up from the client as part of a POST request, you can access the properties over then url
   addNote.id = uuid();
+
   noteData.push(addNote);
+
   const jsonData = JSON.stringify(noteData);
 
   fs.writeFile("./db/db.json", jsonData, (err) => {
@@ -63,7 +61,24 @@ app.post("/api/notes", (req, res) => {
 });
 
 //delete request
+app.delete("api/notes/:id", (req, res) => {
+  const id = req.params.id;
+ let filtered = noteData.filter(function (note) {
+   return note.id != id;
+ });
 
+ const newNoteData = JSON.stringify(filtered);
+ noteData = filtered;
+
+ fs.writeFileSync(__dirname + "./db/db.json", newNoteData, (err) => {
+   if (err) throw err;
+ });
+});
+
+//return index.html in case the url that added isn't defined
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
 
 
 // Server Setup
