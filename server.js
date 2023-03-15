@@ -47,8 +47,8 @@ app.post("/api/notes", (req, res) => {
 //delete request
 app.delete("api/notes/:id", (req, res) => {
   
-  const notes = JSON.parse(fs.readFileSync("./db/db.json"));
-  const delNotes = notes.filter((removeNotes)=> removeNotes.id !=req.params.id);
+  const addNotes = JSON.parse(fs.readFileSync("./db/db.json"));
+  const delNotes = addNotes.filter((removeNotes)=> removeNotes.id !=req.params.id);
   fs.writeFileSync("./db/db.json", JSON.stringify(delNotes));
   res.json(delNotes)
 });
