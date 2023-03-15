@@ -13,9 +13,9 @@ const path = require ("path");
 const PORT = process.env.PORT || 3001;
 
 //generate unique id
-const uuid = require('./helper/uuid');
+const uuid = require('./helper/uuid.js');
 
-
+const noteData = require("./db/db.json");
 
 // Sets up the Express Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -36,22 +36,33 @@ res.sendFile(path.join(__dirname, "/db/db.json"));
 
 //post request to create new data 
 app.post("/api/notes", (req, res) => {
-   const addNotes = JSON.parse(fs.readFileSync("./db/db.json"));
-   const newNotes = req.body;
-   newNotes.id = uuid;
-   addNotes.push(newNotes);
-   fs.writeFileSync("./db/db.json", JSON.stringify(addNotes));
-   res.json(addNotes);
+  const addNote = req.body; //holds parameters that are sent up from the client as part of a POST request, you can access the properties over then url
+  addNote.id = uuid();
+
+  noteData.push(addNote);
+
+  const jsonData = JSON.stringify(noteData);
+
+  fs.writeFile("./db/db.json", jsonData, (err) => {
+    err ? console.log(err) : res.send(addNote);
+  });
 });
 
 //delete request
-app.delete("api/notes/:id", (req, res) => {
-  
-  const addNotes = JSON.parse(fs.readFileSync("./db/db.json"));
-  const delNotes = addNotes.filter((removeNotes)=> removeNotes.id !=req.params.id);
-  fs.writeFileSync("./db/db.json", JSON.stringify(delNotes));
-  res.json(delNotes)
+app.delete("/api/notes/:id", (req, res) => {
+  let noteList = JSON.parse(fs.readFileSync("./db/db.json"));
+  let noteId = req.params.id.toString();
+
+  //filter all notes that does not have matching id and save them as a new array
+  //the matching array will be deleted
+  noteList = noteList.filter((selected) => {
+    return selected.id != noteId;
+  });
+  //write the updated data to db.json and display the updated note
+  fs.writeFileSync("./db/db.json", JSON.stringify(noteList));
+  res.json(noteList);
 });
+
 
 // Get request to send the data to the server
 //return index.html
