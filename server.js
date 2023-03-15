@@ -62,17 +62,21 @@ app.post("/api/notes", (req, res) => {
 
 //delete request
 app.delete("api/notes/:id", (req, res) => {
-  const id = req.params.id;
- let filtered = noteData.filter(function (note) {
-   return note.id != id;
- });
+  //const id = req.params.id;
+  const notes = JSON.parse(fs.readFileSync("./db/db.json"));
+  const delNotes = notes.filter((rmvNotes)=> rmvNotes.id !=req.params.id);
+  fs.writeFileSync("./db/db.json", JSON.stringify(delNotes));
+  res.json(delNotes)
+//  let filtered = noteData.filter(function (note) {
+//    return note.id != id;
+//  });
 
- const newNoteData = JSON.stringify(filtered);
- noteData = filtered;
+//  const newNoteData = JSON.stringify(filtered);
+//  noteData = filtered;
 
- fs.writeFileSync(__dirname + "./db/db.json", newNoteData, (err) => {
-   if (err) throw err;
- });
+//  fs.writeFileSync(__dirname + "./db/db.json", newNoteData, (err) => {
+//    if (err) throw err;
+//  });
 });
 
 //return index.html in case the url that added isn't defined
