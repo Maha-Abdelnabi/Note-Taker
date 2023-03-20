@@ -4,11 +4,9 @@
 
 ## Check It Out!
 
-Click [here](https://pacific-gorge-02297.herokuapp.com/) to watch a live demo!
+ [Click here to visit the live deployed site](https://pacific-gorge-02297.herokuapp.com/)!
 
-## Walkthrough Video link
 
-[Note Taker Walkthrough Video](https://drive.google.com/file/d/1ry4xQylT8qQ89NjUCxQn9tdQA8BSt3Qy/view)
  ## Description
 This project is to create an application called Note Taker that can be used to write and save notes. This application will use an Express.js back end and will save and retrieve note data from a JSON file. And live deployed on Heroku.
 ## Table Of Contents
